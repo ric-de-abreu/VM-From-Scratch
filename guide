@@ -1,0 +1,71 @@
+Passo a Passo para Criar um VM com Debian e Portainer prontos para executar qualquer container
+
+Acessar Proxmox VE Helper-Scripts e executar a VM com Debian 13
+https://community-scripts.github.io/ProxmoxVE/scripts?id=debian-13-vm&category=Operating+Systems
+
+Abaixo o código para instalar ela
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/vm/debian-13-vm.sh)"
+
+após isso execute update e upgrade
+
+a VM agora tem um espaço muito limitado, precisamos aumentar ele para o tamanho desejado conforme abaixo:
+Confirmação rápida:
+
+lsblk
+
+Você provavelmente verá algo como:
+
+Disk /dev/sda: 50G
+└─/dev/sda1: 3G
+
+O que vamos fazer
+Expandir a partição /dev/sda1 até o final do disco
+Expandir o filesystem EXT4
+Docker, Portainer e Jellyfin passam a funcionar normalmente
+Não precisa mover Docker de lugar
+Não precisa reiniciar a VM (mas pode, se quiser)
+
+1️⃣ Instalar a ferramenta (caso não exista)
+apt update
+apt install -y cloud-guest-utils
+
+2️⃣ Expandir a partição raiz
+growpart /dev/sda 1
+Saída esperada (similar a):
+CHANGED: partition=1 start=2048 old: size=XXXXX new: size=YYYYY
+
+3️⃣ Expandir o filesystem EXT4
+resize2fs /dev/sda1
+Saída esperada:
+Filesystem at /dev/sda1 is mounted on /; resizing required
+The filesystem on /dev/sda1 is now XXXXX blocks long.
+
+4️⃣ Conferir o resultado (obrigatório)
+df -h /
+Resultado esperado:
+/dev/sda1   ~50G   usado   livre   /
+Se aparecer algo próximo de 46–48 GB livres, está perfeito.
+
+Depois de aumentar o espaço em disco instalar o Cockpit
+apt install -y cockpit
+systemctl enable --now cockpit.socket
+apt install -y cockpit-machines cockpit-podman cockpit-networkmanager
+
+1. Criar o grupo abreu com GID 1000
+groupadd -g 1000 abreu
+
+2. Criar o usuário abreu com UID 1000 e GID 1000
+useradd \
+  -u 1000 \
+  -g 1000 \
+  -m \
+  -s /bin/bash \
+  abreu
+Definir senha:
+passwd abreu
+
+3. Conceder privilégio administrativo total (sudo)
+usermod -aG sudo abreu
+
+Iniciar a Instalação do Docker
+
