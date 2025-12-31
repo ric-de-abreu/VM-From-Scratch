@@ -85,6 +85,26 @@ Altere o hostname  (exemplo alterado para Home-Core)
 sudo hostnamectl set-hostname Home-Core
 
 -----------------------------------------------------------------------------------------------------------------------------
+Acessar pasta compartilhada
+-----------------------------------------------------------------------------------------------------------------------------
+1️⃣Instalar pacoe NFS
+
+apt update
+apt install -y nfs-common
+
+3️⃣ Editar o arquivo fstab
+nano /etc/fstab
+
+cole a linha:
+192.168.31.11:/mnt/HDD500/Pessoal/media  /mnt/media  nfs  rw,noatime,hard,intr,nofail,x-systemd.automount  0  0
+
+3️⃣Monte o Destino
+systemctl daemon-reload
+mount -a
+ls /mnt/media
+
+
+-----------------------------------------------------------------------------------------------------------------------------
 Iniciar a Instalação do Docker
 -----------------------------------------------------------------------------------------------------------------------------
 
