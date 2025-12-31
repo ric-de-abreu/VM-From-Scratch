@@ -8,9 +8,11 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/Proxmo
 
 após isso execute update e upgrade
 
+-----------------------------------------------------------------------------------------------------------------------------
 a VM agora tem um espaço muito limitado, precisamos aumentar ele para o tamanho desejado conforme abaixo:
-Confirmação rápida:
+-----------------------------------------------------------------------------------------------------------------------------
 
+Confirmação rápida:
 lsblk
 
 Você provavelmente verá algo como:
@@ -46,10 +48,19 @@ Resultado esperado:
 /dev/sda1   ~50G   usado   livre   /
 Se aparecer algo próximo de 46–48 GB livres, está perfeito.
 
+-----------------------------------------------------------------------------------------------------------------------------
+instalar o Cockpit
+-----------------------------------------------------------------------------------------------------------------------------
+
 Depois de aumentar o espaço em disco instalar o Cockpit
 apt install -y cockpit
 systemctl enable --now cockpit.socket
 apt install -y cockpit-machines cockpit-podman cockpit-networkmanager
+
+-----------------------------------------------------------------------------------------------------------------------------
+Criar usuário e grupo
+-----------------------------------------------------------------------------------------------------------------------------
+
 
 1. Criar o grupo abreu com GID 1000
 groupadd -g 1000 abreu
@@ -67,5 +78,44 @@ passwd abreu
 3. Conceder privilégio administrativo total (sudo)
 usermod -aG sudo abreu
 
+-----------------------------------------------------------------------------------------------------------------------------
+Altere o hostname  (exemplo alterado para Home-Core)
+-----------------------------------------------------------------------------------------------------------------------------
+
+sudo hostnamectl set-hostname Home-Core
+
+-----------------------------------------------------------------------------------------------------------------------------
 Iniciar a Instalação do Docker
+-----------------------------------------------------------------------------------------------------------------------------
+
+# Add SUDO
+apt-get install sudo -y
+
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+# Add docke
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# teste
+sudo docker run hello-world
+
+-----------------------------------------------------------------------------------------------------------------------------
+Iniciar a Instalação do Portainer
+-----------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 
