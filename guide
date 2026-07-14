@@ -96,7 +96,7 @@ apt install -y nfs-common
 nano /etc/fstab
 
 cole a linha:
-192.168.31.11:/mnt/HDD500/Pessoal/media  /mnt/media  nfs  rw,noatime,hard,intr,nofail,x-systemd.automount  0  0
+192.168.31.11:/mnt/Tank/Pessoal/Media  /mnt/media  nfs  rw,noatime,hard,nofail,x-systemd.automount  0  0
 
 3️⃣Monte o Destino
 systemctl daemon-reload
